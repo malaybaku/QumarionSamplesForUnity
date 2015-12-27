@@ -18,9 +18,9 @@ public class PdkToHumanoid : MonoBehaviour
     /// <summary>適用先のヒューマノイドに対応するアニメーターです。</summary>
     public Animator animator;
 
-    private bool _useAccelerometerRelative = false;
+    private bool _useAccelFilter = false;
     //加速度センサでフィルタ処理を行う場合はtrueに設定。基本false推奨。
-    public bool UseAccelerometerRelative = false;
+    public bool UseAccelFilter = false;
 
     private bool _useAccelerometer = false;
     //加速度センサを使う場合はtrueに設定。加速度センサを使うと体全体が傾いた状態も表現可能。
@@ -33,11 +33,9 @@ public class PdkToHumanoid : MonoBehaviour
     void Start()
     {
         _model = PdkManager.CreateStandardModelPS();
-        //_model.Root.SetZeroRotationLocalMatrix();
 
         //NOTE: QmBoneOnUnityのコンストラクタが再帰的に子要素のインスタンスを生成
         _rootBone = new QumaBone2Humanoid(_model.Root, StandardPSBones.Hips, null);
-        //_rootBone.BoneObject.transform.parent = transform;
 
         if (PdkManager.ConnectedDeviceCount == 0)
         {
@@ -82,10 +80,10 @@ public class PdkToHumanoid : MonoBehaviour
     //加速度センサの設定更新を行います。
     private void UpdateAccelerometerSetting()
     {
-        if (UseAccelerometerRelative != _useAccelerometerRelative)
+        if (UseAccelFilter != _useAccelFilter)
         {
-            _useAccelerometerRelative = UseAccelerometerRelative;
-            _model.AccelerometerMode = UseAccelerometerRelative ?
+            _useAccelFilter = UseAccelFilter;
+            _model.AccelerometerMode = UseAccelFilter ?
                 AccelerometerMode.Relative :
                 AccelerometerMode.Direct;
             Debug.Log(string.Format("Accelerometer mode was set to {0}", _model.AccelerometerMode));
